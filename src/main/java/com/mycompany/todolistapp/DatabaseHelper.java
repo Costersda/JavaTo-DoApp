@@ -19,10 +19,10 @@ public class DatabaseHelper {
     private static final String JDBC_DRIVER = "org.sqlite.JDBC";
     
     // URL of the development database
-    //private static final String DATABASE_URL = "jdbc:sqlite:./data/ToDo.db";
+    private static final String DATABASE_URL = "jdbc:sqlite:./data/ToDo.db";
     
     // URL of the production database
-    private static final String DATABASE_URL = "jdbc:sqlite:ToDo.db";
+    //private static final String DATABASE_URL = "jdbc:sqlite:ToDo.db";
     
     /**
      * Establishes and returns a connection to the SQLite database.
