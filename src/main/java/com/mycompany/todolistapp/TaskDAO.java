@@ -13,9 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * TaskDAO is responsible for handling all database operations
+ * related to the Task entity. It provides methods to retrieve, insert, update,
+ * and delete tasks from the database.
+ */
 public class TaskDAO {
 
-    // Get all the tasks for the current user
+    /**
+     * Retrieves all tasks associated with a specific user.
+     *
+     * @param userId The user ID for which to retrieve tasks.
+     * @return A list of Task objects associated with the user.
+     */
     public List<Task> getTasksForUser(int userId) {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT TaskID, Title, Description, DueDate FROM Task WHERE UserId = ? ORDER BY DueDate ASC;";
@@ -31,10 +41,7 @@ public class TaskDAO {
                     String description = resultSet.getString("Description");
                     LocalDate dueDate = resultSet.getObject("DueDate", LocalDate.class);
 
-                    // Construct Task object with all fields
-                    Task task = new Task(taskId, title, description, dueDate);
-                    // Add the task to the list
-                    tasks.add(task);
+                    tasks.add(new Task(taskId, title, description, dueDate));
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -42,26 +49,33 @@ public class TaskDAO {
         }
         return tasks;
     }
-    
-    // Delete a task given its taskId
+
+    /**
+     * Deletes a task based on its ID.
+     *
+     * @param taskId The ID of the task to be deleted.
+     * @return true if the task was successfully deleted, false otherwise.
+     */
     public boolean deleteTask(String taskId) {
         String sql = "DELETE FROM Task WHERE TaskID = ?;";
 
         try (Connection connection = DatabaseHelper.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, taskId);
-            int affectedRows = preparedStatement.executeUpdate();
-            return affectedRows > 0;
-
+            return preparedStatement.executeUpdate() > 0;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }
     }
-    
-    
-    // Get a single task given a taskId
+
+    /**
+     * Retrieves a single task by its ID.
+     *
+     * @param taskId The ID of the task to retrieve.
+     * @return The Task object if found, null otherwise.
+     */
     public Task getTaskById(String taskId) {
         String sql = "SELECT * FROM Task WHERE TaskID = ?;";
 
@@ -74,6 +88,7 @@ public class TaskDAO {
                     String title = resultSet.getString("Title");
                     String description = resultSet.getString("Description");
                     LocalDate dueDate = resultSet.getObject("DueDate", LocalDate.class);
+
                     return new Task(taskId, title, description, dueDate);
                 }
             }
@@ -82,8 +97,13 @@ public class TaskDAO {
         }
         return null;
     }
-    
-    // Update a task
+
+    /**
+     * Updates an existing task in the database.
+     *
+     * @param task The Task object containing the updated information.
+     * @return true if the task was successfully updated, false otherwise.
+     */
     public boolean updateTask(Task task) {
         String sql = "UPDATE Task SET Title = ?, Description = ?, DueDate = ? WHERE TaskID = ?;";
 
@@ -95,16 +115,19 @@ public class TaskDAO {
             preparedStatement.setString(3, task.getDueDateForSQLite());
             preparedStatement.setString(4, task.getTaskID());
 
-            int affectedRows = preparedStatement.executeUpdate();
-            return affectedRows > 0;
-
+            return preparedStatement.executeUpdate() > 0;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }
     }
-    
-    // Get all the tasks for a date
+
+    /**
+     * Retrieves all tasks that are due on a specific date.
+     *
+     * @param date The date for which to retrieve tasks.
+     * @return A list of Task objects due on the specified date.
+     */
     public List<Task> getTasksForDate(LocalDate date) {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT TaskID, Title, Description, DueDate FROM Task WHERE DueDate = ? ORDER BY DueDate ASC;";
@@ -118,18 +141,14 @@ public class TaskDAO {
                     String taskId = resultSet.getString("TaskID");
                     String title = resultSet.getString("Title");
                     String description = resultSet.getString("Description");
-                    LocalDate dueDate = resultSet.getObject("DueDate", LocalDate.class); // Fetching as LocalDate
+                    LocalDate dueDate = resultSet.getObject("DueDate", LocalDate.class);
 
-                    // Construct Task object with all fields
-                    Task task = new Task(taskId, title, description, dueDate);
-                    tasks.add(task);
-                    System.out.println(tasks.size());
+                    tasks.add(new Task(taskId, title, description, dueDate));
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         return tasks;
     }
 }
